@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.EditText;
 
 import com.shahriar.hasan.monthlyexpenserecorder.R;
 
@@ -33,12 +35,15 @@ public class AddCategoryDialog extends DialogFragment {
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        builder.setView(inflater.inflate(R.layout.add_category_dialog, null))
+        final View dialogView = inflater.inflate(R.layout.add_category_dialog, null);
+        builder.setView(dialogView)
                 // Add action buttons
                 .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-
+                        final EditText categoryName = (EditText)dialogView.findViewById(R.id.categoryName);
+                        final EditText categoryDescription = (EditText) dialogView.findViewById(R.id.categoryDescription);
+                        System.out.println("Category Name " +categoryName.getText() + " Category Description "+ categoryDescription.getText());
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

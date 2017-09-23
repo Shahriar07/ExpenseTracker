@@ -30,7 +30,7 @@ public class CategoryService {
     public CategoryData getCategoryByName(String categoryName){
         CategoryData categoryData = new CategoryData();
         Cursor res = helper.getCategoryByName(categoryName);
-        while(res.isAfterLast() == false){
+        while(res != null && res.isAfterLast() == false){
             categoryData.setId(res.getInt(res.getColumnIndex(CATEGORY_COLUMN_ID)));
             categoryData.setName(res.getString(res.getColumnIndex(CATEGORY_COLUMN_NAME)));
             categoryData.setDescription(res.getString(res.getColumnIndex(CATEGORY_COLUMN_DESCRIPTION)));

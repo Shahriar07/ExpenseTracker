@@ -129,7 +129,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        addCategory();
         addBudget();
         TextView totalExpense  = (TextView) findViewById(R.id.totalExpenseAmount);
         totalExpense.setText(controller.getTotalExpense(7,17) + " TK");
@@ -165,6 +164,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (v == addCategory){
             // addCategory
+            System.out.println("Category added ");
             DialogFragment dialog = new AddCategoryDialog();
             dialog.show(MainActivity.this.getFragmentManager(), "AddCategoryDialog");
             //Toast.makeText(this, getText(R.string.add_category),Toast.LENGTH_SHORT).show();

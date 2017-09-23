@@ -20,38 +20,38 @@ import java.util.HashMap;
 public class DBHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "Budget.db";
-    public static final String EXPENSE_TABLE_NAME = "expense";
-    public static final String EXPENSE_COLUMN_ID = "id";
-    public static final String EXPENSE_COLUMN_DATE = "date";
-    public static final String EXPENSE_COLUMN_MONTH = "month";
+    private static final String EXPENSE_TABLE_NAME = "expense";
+    private static final String EXPENSE_COLUMN_ID = "id";
+    private static final String EXPENSE_COLUMN_DATE = "date";
+    private static final String EXPENSE_COLUMN_MONTH = "month";
     public static final String EXPENSE_COLUMN_YEAR = "year";
     public static final String EXPENSE_COLUMN_AMOUNT = "amount";
-    public static final String EXPENSE_COLUMN_DESCRIPTION = "description";
-    public static final String EXPENSE_COLUMN_CATEGORY = "category_id";
+    private static final String EXPENSE_COLUMN_DESCRIPTION = "description";
+    private static final String EXPENSE_COLUMN_CATEGORY = "category_id";
 
 
-    public static final String CATEGORY_TABLE_NAME = "category";
+    private static final String CATEGORY_TABLE_NAME = "category";
     public static final String CATEGORY_COLUMN_ID = "id";
     public static final String CATEGORY_COLUMN_NAME = "name";
     public static final String CATEGORY_COLUMN_DESCRIPTION = "description";
     public static final String CATEGORY_COLUMN_TYPE = "type"; // income = 1 or expense = 0
 
-    public static final String INCOME_TABLE_NAME = "income";
-    public static final String INCOME_COLUMN_ID = "id";
-    public static final String INCOME_COLUMN_DESCRIPTION = "description";
-    public static final String INCOME_COLUMN_CATEGORY = "category_id";
-    public static final String INCOME_COLUMN_MONTH = "month";
-    public static final String INCOME_COLUMN_YEAR = "year";
-    public static final String INCOME_COLUMN_DATE = "date";
-    public static final String INCOME_COLUMN_AMOUNT = "amount";
+    private static final String INCOME_TABLE_NAME = "income";
+    private static final String INCOME_COLUMN_ID = "id";
+    private static final String INCOME_COLUMN_DESCRIPTION = "description";
+    private static final String INCOME_COLUMN_CATEGORY = "category_id";
+    private static final String INCOME_COLUMN_MONTH = "month";
+    private static final String INCOME_COLUMN_YEAR = "year";
+    private static final String INCOME_COLUMN_DATE = "date";
+    private static final String INCOME_COLUMN_AMOUNT = "amount";
 
-    public static final String BUDGET_TABLE_NAME = "budget";
-    public static final String BUDGET_COLUMN_ID = "id";
-    public static final String BUDGET_COLUMN_CATEGORY = "category_id";
-    public static final String BUDGET_COLUMN_DESCRIPTION = "description";
-    public static final String BUDGET_COLUMN_MONTH = "month";
-    public static final String BUDGET_COLUMN_YEAR = "year";
-    public static final String BUDGET_COLUMN_AMOUNT = "amount";
+    private static final String BUDGET_TABLE_NAME = "budget";
+    private static final String BUDGET_COLUMN_ID = "id";
+    private static final String BUDGET_COLUMN_CATEGORY = "category_id";
+    private static final String BUDGET_COLUMN_DESCRIPTION = "description";
+    private static final String BUDGET_COLUMN_MONTH = "month";
+    private static final String BUDGET_COLUMN_YEAR = "year";
+    private static final String BUDGET_COLUMN_AMOUNT = "amount";
 
 
     private HashMap hp;
@@ -79,8 +79,8 @@ public class DBHelper extends SQLiteOpenHelper {
                         "(id integer primary key, date long, month int, year int, amount double,description text, category_id int)"
         );
         db.execSQL(
-                "create table category " +
-                        "(id integer primary key, name text, description text, type int)"
+                "create table " + CATEGORY_TABLE_NAME + " " +
+                        "(id integer primary key, " + CATEGORY_COLUMN_NAME + " text, " + CATEGORY_COLUMN_DESCRIPTION + " text, " + CATEGORY_COLUMN_TYPE + " int)"
         );
         db.execSQL(
                 "create table income " +
@@ -116,6 +116,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public long addCategory (String name, String description, CategoryTypeEnum type) {
         int catType = 1; //income:1 expense:0
+        Cursor res = getCategoryByName(name);
+        if (res != null && res.getCount() > 0){
+            return 0;
+        }
+        //TODO: check if category already exist. If exist return error.
         if (CategoryTypeEnum.EXPENSE_CATEGORY == type) catType = 0;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -206,7 +211,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return res;
     }
 
-    public int numberOfRows(){
+    private int numberOfRows(){
         SQLiteDatabase db = this.getReadableDatabase();
         int numRows = (int) DatabaseUtils.queryNumEntries(db, EXPENSE_TABLE_NAME);
         return numRows;
@@ -235,8 +240,15 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public Cursor getCategoryByName(String categoryName) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "select * from category where name="+categoryName+"", null);
-        res.moveToFirst();
-        return res;
+        try {
+            Cursor res = db.rawQuery("select * FROM " + CATEGORY_TABLE_NAME + " WHERE " + CATEGORY_COLUMN_NAME + "= ?", new String[]{categoryName});
+            res.moveToFirst();
+            return res;
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+
     }
 }
