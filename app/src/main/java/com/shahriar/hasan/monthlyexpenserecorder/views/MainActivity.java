@@ -17,13 +17,17 @@ import android.widget.Toast;
 
 import com.shahriar.hasan.monthlyexpenserecorder.Contorller.DashboardController;
 import com.shahriar.hasan.monthlyexpenserecorder.Dialogs.AddCategoryDialog;
+import com.shahriar.hasan.monthlyexpenserecorder.Interfaces.AddCategoryDialogListener;
 import com.shahriar.hasan.monthlyexpenserecorder.R;
+import com.shahriar.hasan.monthlyexpenserecorder.data.CategoryData;
 import com.shahriar.hasan.monthlyexpenserecorder.dblayer.DBHelper;
 import com.shahriar.hasan.monthlyexpenserecorder.enums.CategoryTypeEnum;
 
+import java.util.ArrayList;
+
 import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, AddCategoryDialogListener {
 
     DashboardController controller;
     private Button addExpense;
@@ -129,13 +133,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        addBudget();
+        //addBudget();
+        displayAllCategory();
         TextView totalExpense  = (TextView) findViewById(R.id.totalExpenseAmount);
         totalExpense.setText(controller.getTotalExpense(7,17) + " TK");
     }
 
-    private  void addCategory(){
-        if(controller.addNewCategory("Transportation", "Transport", CategoryTypeEnum.EXPENSE_CATEGORY)!=0){
+    private void displayAllCategory(){
+        ArrayList categoryList = controller.getAllCategory(CategoryTypeEnum.INCOME_CATEGORY);
+        if(categoryList != null && categoryList.size() > 0)
+        System.out.println("Total Income category " + categoryList.size() + " Details " + ((CategoryData)categoryList.get(0)).getName());
+
+        categoryList = controller.getAllCategory(CategoryTypeEnum.EXPENSE_CATEGORY);
+        if(categoryList != null && categoryList.size() > 0)
+        System.out.println("Total expense category " + categoryList.size() + " Details " +((CategoryData)categoryList.get(0)).getName());
+    }
+
+    private  void addCategory(String categoryName, String categoryDescription, Boolean isIncome){
+        if(controller.addNewCategory(categoryName, categoryDescription, isIncome?CategoryTypeEnum.INCOME_CATEGORY:CategoryTypeEnum.EXPENSE_CATEGORY)!=0){
             System.out.println("Category added");
         }
         else {
@@ -152,11 +167,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /*
+    This function will get the input from footer view
+    to add expense, income and category
+     */
     @Override
     public void onClick(View v) {
         if (v == addExpense){
             // addExpense
             Toast.makeText(this, getText(R.string.add_expense),Toast.LENGTH_SHORT).show();
+            displayAllCategory();
         }
         if (v == addIncome){
             // addIncome
@@ -167,7 +187,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             System.out.println("Category added ");
             DialogFragment dialog = new AddCategoryDialog();
             dialog.show(MainActivity.this.getFragmentManager(), "AddCategoryDialog");
-            //Toast.makeText(this, getText(R.string.add_category),Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onSaveCategoryClicked(String categoryName, String categoryDescription, Boolean isIncome) {
+        // TODO: validate inputs
+        addCategory(categoryName,categoryDescription,isIncome);
     }
 }

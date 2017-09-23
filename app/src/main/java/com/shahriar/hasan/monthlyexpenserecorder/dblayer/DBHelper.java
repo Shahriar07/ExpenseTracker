@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.shahriar.hasan.monthlyexpenserecorder.data.CategoryData;
-import com.shahriar.hasan.monthlyexpenserecorder.enums.CategoryTypeEnum;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -114,19 +113,17 @@ public class DBHelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public long addCategory (String name, String description, CategoryTypeEnum type) {
-        int catType = 1; //income:1 expense:0
+    public long addCategory (String name, String description, int type) {
         Cursor res = getCategoryByName(name);
         if (res != null && res.getCount() > 0){
             return 0;
         }
         //TODO: check if category already exist. If exist return error.
-        if (CategoryTypeEnum.EXPENSE_CATEGORY == type) catType = 0;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("name", name);
         contentValues.put("description", description);
-        contentValues.put("type", catType);
+        contentValues.put("type", type);
         long id = db.insert("category", null, contentValues);
         return id;
     }
@@ -136,7 +133,7 @@ public class DBHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put("name", data.getName());
         contentValues.put("description", data.getDescription());
-        contentValues.put("type", data.isIncome());
+        contentValues.put("type", data.getIncome());
         int i = db.update("category", contentValues, "id = ? ", new String[] { Integer.toString(data.getId()) } );
         return (i>0)?true:false;
     }
@@ -250,5 +247,18 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         return null;
 
+    }
+
+    public Cursor getAllCategory(int type) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        try {
+            Cursor res = db.rawQuery("select * FROM " + CATEGORY_TABLE_NAME + " WHERE " + CATEGORY_COLUMN_TYPE + "= ?", new String[]{type+""});
+            res.moveToFirst();
+            return res;
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }

@@ -1,5 +1,7 @@
 package com.shahriar.hasan.monthlyexpenserecorder.data;
 
+import com.shahriar.hasan.monthlyexpenserecorder.enums.CategoryTypeEnum;
+
 /**
  * Created by H. M. Shahriar on 9/17/2017.
  */
@@ -30,18 +32,20 @@ public class CategoryData {
         this.description = description;
     }
 
-    public boolean isIncome() {
+    public CategoryTypeEnum isIncome() {
         return isIncome;
     }
-
-    public void setIncome(boolean income) {
+    public int getIncome() {
+        return isIncome.getNumericType();
+    }
+    public void setIncome(CategoryTypeEnum income) {
         isIncome = income;
     }
 
     private int id;
     private String name;
     private String description;
-    private boolean isIncome;
+    private CategoryTypeEnum isIncome;
 
 
 }

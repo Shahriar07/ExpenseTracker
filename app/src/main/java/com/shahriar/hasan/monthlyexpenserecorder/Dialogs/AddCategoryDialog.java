@@ -1,5 +1,6 @@
 package com.shahriar.hasan.monthlyexpenserecorder.Dialogs;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
@@ -8,7 +9,10 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
+import com.shahriar.hasan.monthlyexpenserecorder.Interfaces.AddCategoryDialogListener;
 import com.shahriar.hasan.monthlyexpenserecorder.R;
 
 /**
@@ -17,16 +21,22 @@ import com.shahriar.hasan.monthlyexpenserecorder.R;
 
 public class AddCategoryDialog extends DialogFragment {
 
-    String[] types = new String[]{
-            "Income",
-            "Expense"
-    };
+    AddCategoryDialogListener mListener;
 
-    // Boolean array for initial selected items
-    final boolean[] checkedType = new boolean[]{
-            true, // Income
-            false // Expense
-    };
+    // Override the Fragment.onAttach() method to instantiate the AddCategoryDialogListener
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        // Verify that the host activity implements the callback interface
+        try {
+            // Instantiate the NoticeDialogListener so we can send events to the host
+            mListener = (AddCategoryDialogListener) activity;
+        } catch (ClassCastException e) {
+            // The activity doesn't implement the interface, throw exception
+            throw new ClassCastException(activity.toString()
+                    + " must implement AddCategoryDialogListener");
+        }
+    }
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -43,7 +53,17 @@ public class AddCategoryDialog extends DialogFragment {
                     public void onClick(DialogInterface dialog, int id) {
                         final EditText categoryName = (EditText)dialogView.findViewById(R.id.categoryName);
                         final EditText categoryDescription = (EditText) dialogView.findViewById(R.id.categoryDescription);
-                        System.out.println("Category Name " +categoryName.getText() + " Category Description "+ categoryDescription.getText());
+                        RadioGroup radioGroup = (RadioGroup) dialogView.findViewById(R.id.radio);
+                        // get selected radio button from radioGroup
+                        int selectedId = radioGroup.getCheckedRadioButtonId();
+
+                        // find the radiobutton by returned id
+                        RadioButton radioButton = (RadioButton) dialogView.findViewById(selectedId);
+                        String tag = radioButton.getTag().toString();
+                        String name = categoryName.getText().toString();
+                        String desc = categoryDescription.getText().toString();
+                        System.out.println("Category Name " + name + " Category Description "+ desc);
+                        mListener.onSaveCategoryClicked(name,desc, tag.equals("1"));
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
