@@ -15,9 +15,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.shahriar.hasan.monthlyexpenserecorder.Contorller.DashboardController;
-import com.shahriar.hasan.monthlyexpenserecorder.Dialogs.AddCategoryDialog;
-import com.shahriar.hasan.monthlyexpenserecorder.Interfaces.AddCategoryDialogListener;
+import com.shahriar.hasan.monthlyexpenserecorder.contorller.DashboardController;
+import com.shahriar.hasan.monthlyexpenserecorder.dialogs.AddCategoryDialog;
+import com.shahriar.hasan.monthlyexpenserecorder.interfaces.AddCategoryDialogListener;
 import com.shahriar.hasan.monthlyexpenserecorder.R;
 import com.shahriar.hasan.monthlyexpenserecorder.data.CategoryData;
 import com.shahriar.hasan.monthlyexpenserecorder.dblayer.DBHelper;
@@ -151,10 +151,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private  void addCategory(String categoryName, String categoryDescription, Boolean isIncome){
         if(controller.addNewCategory(categoryName, categoryDescription, isIncome?CategoryTypeEnum.INCOME_CATEGORY:CategoryTypeEnum.EXPENSE_CATEGORY)!=0){
-            System.out.println("Category added");
+            System.out.println("Category added successfully");
         }
         else {
-            System.out.println("Error in category add");
+            System.out.println("Error in Adding category");
         }
     }
 

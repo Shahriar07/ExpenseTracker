@@ -1,4 +1,4 @@
-package com.shahriar.hasan.monthlyexpenserecorder.Interfaces;
+package com.shahriar.hasan.monthlyexpenserecorder.interfaces;
 
 /**
  * Created by H. M. Shahriar on 9/23/2017.

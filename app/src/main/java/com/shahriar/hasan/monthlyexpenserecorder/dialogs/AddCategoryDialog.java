@@ -1,4 +1,4 @@
-package com.shahriar.hasan.monthlyexpenserecorder.Dialogs;
+package com.shahriar.hasan.monthlyexpenserecorder.dialogs;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -12,7 +12,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import com.shahriar.hasan.monthlyexpenserecorder.Interfaces.AddCategoryDialogListener;
+import com.shahriar.hasan.monthlyexpenserecorder.interfaces.AddCategoryDialogListener;
 import com.shahriar.hasan.monthlyexpenserecorder.R;
 
 /**

@@ -1,4 +1,4 @@
-package com.shahriar.hasan.monthlyexpenserecorder.Utility;
+package com.shahriar.hasan.monthlyexpenserecorder.utility;
 
 import java.util.Calendar;
 

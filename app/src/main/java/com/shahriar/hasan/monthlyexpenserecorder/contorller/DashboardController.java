@@ -1,4 +1,4 @@
-package com.shahriar.hasan.monthlyexpenserecorder.Contorller;
+package com.shahriar.hasan.monthlyexpenserecorder.contorller;
 
 import com.shahriar.hasan.monthlyexpenserecorder.data.CategoryData;
 import com.shahriar.hasan.monthlyexpenserecorder.enums.CategoryTypeEnum;

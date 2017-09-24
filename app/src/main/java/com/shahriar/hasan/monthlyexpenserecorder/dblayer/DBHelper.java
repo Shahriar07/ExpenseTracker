@@ -252,7 +252,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public Cursor getAllCategory(int type) {
         SQLiteDatabase db = this.getReadableDatabase();
         try {
-            Cursor res = db.rawQuery("select * FROM " + CATEGORY_TABLE_NAME + " WHERE " + CATEGORY_COLUMN_TYPE + "= ?", new String[]{type+""});
+            Cursor res = db.rawQuery("select * FROM " + CATEGORY_TABLE_NAME + " WHERE " + CATEGORY_COLUMN_TYPE + "= ? ORDER BY ? DESC", new String[]{type+"", CATEGORY_COLUMN_NAME});
             res.moveToFirst();
             return res;
         }
