@@ -1,6 +1,9 @@
 package com.shahriar.hasan.monthlyexpenserecorder.services;
 
+import com.shahriar.hasan.monthlyexpenserecorder.data.BudgetData;
 import com.shahriar.hasan.monthlyexpenserecorder.dblayer.DBHelper;
+
+import java.util.ArrayList;
 
 /**
  * Created by H. M. Shahriar on 8/6/2017.
@@ -17,7 +20,11 @@ public class BudgetService {
         return BudgetService.budget;
     }
 
-    public long addBudget(int month, int year, double amount, String description, int categoryId){
-        return helper.addBudget(month,year, amount, description,categoryId);
+    public long addBudget(BudgetData data){
+        return helper.addBudget(data);
+    }
+
+    public long addMultipleBudget(ArrayList<BudgetData> budgetList){
+        return helper.addMultipleBudget( budgetList);
     }
 }

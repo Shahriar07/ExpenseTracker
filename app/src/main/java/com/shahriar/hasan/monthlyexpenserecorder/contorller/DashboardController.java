@@ -1,5 +1,6 @@
 package com.shahriar.hasan.monthlyexpenserecorder.contorller;
 
+import com.shahriar.hasan.monthlyexpenserecorder.data.BudgetData;
 import com.shahriar.hasan.monthlyexpenserecorder.data.CategoryData;
 import com.shahriar.hasan.monthlyexpenserecorder.enums.CategoryTypeEnum;
 import com.shahriar.hasan.monthlyexpenserecorder.services.BudgetService;
@@ -27,11 +28,18 @@ public class DashboardController {
     public long addNewCategory(String name, String description, CategoryTypeEnum type){
         return categoryService.addCategory(name, description, type);
     }
+
+    // Delete a category
+    public boolean deleteCategory(CategoryData data){
+        return categoryService.deleteCategory(data);
+    }
+
     public ArrayList<CategoryData> getAllCategory(CategoryTypeEnum type){
         return categoryService.getAllCategory(type);
     }
     public long addBudget(int month, int year, double amount, String description, int categoryId){
-        return budgetService.addBudget(month,year, amount, description,categoryId);
+        BudgetData data = new BudgetData(month, year, description, categoryId,amount);
+        return budgetService.addBudget(data);
     }
 
     public double getTotalExpense(int month, int year){

@@ -2,12 +2,14 @@ package com.shahriar.hasan.monthlyexpenserecorder.views;
 
 import android.app.Activity;
 import android.app.DialogFragment;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,13 +17,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.shahriar.hasan.monthlyexpenserecorder.contorller.DashboardController;
-import com.shahriar.hasan.monthlyexpenserecorder.dialogs.AddCategoryDialog;
-import com.shahriar.hasan.monthlyexpenserecorder.interfaces.AddCategoryDialogListener;
 import com.shahriar.hasan.monthlyexpenserecorder.R;
+import com.shahriar.hasan.monthlyexpenserecorder.contorller.DashboardController;
 import com.shahriar.hasan.monthlyexpenserecorder.data.CategoryData;
 import com.shahriar.hasan.monthlyexpenserecorder.dblayer.DBHelper;
+import com.shahriar.hasan.monthlyexpenserecorder.dialogs.AddCategoryDialog;
 import com.shahriar.hasan.monthlyexpenserecorder.enums.CategoryTypeEnum;
+import com.shahriar.hasan.monthlyexpenserecorder.interfaces.AddCategoryDialogListener;
 
 import java.util.ArrayList;
 
@@ -34,12 +36,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button addIncome;
     private Button addCategory;
 
+    private String TAG;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        TAG = this.getLocalClassName();
 
         // Initialize the database
         DBHelper.getInstance(this.getApplicationContext());
@@ -124,6 +129,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Log.i(TAG,"Settings button clicked");
+            Intent addBudgetIntent = new Intent(MainActivity.this, AddBudgetActivity.class);
+            startActivity(addBudgetIntent);
             return true;
         }
 
@@ -140,9 +148,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void displayAllCategory(){
-        ArrayList categoryList = controller.getAllCategory(CategoryTypeEnum.INCOME_CATEGORY);
-        if(categoryList != null && categoryList.size() > 0)
-        System.out.println("Total Income category " + categoryList.size() + " Details " + ((CategoryData)categoryList.get(0)).getName());
+        ArrayList<CategoryData> categoryList = controller.getAllCategory(CategoryTypeEnum.INCOME_CATEGORY);
+        if(categoryList != null && categoryList.size() > 0) {
+            System.out.println("Total Income category " + categoryList.size() + " Details " + (categoryList.get(0)).getName());
+
+//            // Delete the first category
+//           System.out.println("Category Deleted "+ controller.deleteCategory(categoryList.get(0)));
+        }
 
         categoryList = controller.getAllCategory(CategoryTypeEnum.EXPENSE_CATEGORY);
         if(categoryList != null && categoryList.size() > 0)

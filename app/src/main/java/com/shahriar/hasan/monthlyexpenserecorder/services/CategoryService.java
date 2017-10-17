@@ -29,6 +29,10 @@ public class CategoryService {
         return helper.updateCategory(data);
     }
 
+    public boolean deleteCategory(CategoryData data){
+        return helper.deleteCategory(data);
+    }
+
     public CategoryData getCategoryByName(String categoryName){
         CategoryData categoryData = new CategoryData();
         Cursor res = helper.getCategoryByName(categoryName);

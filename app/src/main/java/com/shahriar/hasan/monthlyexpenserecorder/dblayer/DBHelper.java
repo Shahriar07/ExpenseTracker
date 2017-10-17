@@ -6,7 +6,9 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 
+import com.shahriar.hasan.monthlyexpenserecorder.data.BudgetData;
 import com.shahriar.hasan.monthlyexpenserecorder.data.CategoryData;
 
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import java.util.HashMap;
 public class DBHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "Budget.db";
+
     private static final String EXPENSE_TABLE_NAME = "expense";
     private static final String EXPENSE_COLUMN_ID = "id";
     private static final String EXPENSE_COLUMN_DATE = "date";
@@ -35,14 +38,14 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String CATEGORY_COLUMN_DESCRIPTION = "description";
     public static final String CATEGORY_COLUMN_TYPE = "type"; // income = 1 or expense = 0
 
-    private static final String INCOME_TABLE_NAME = "income";
-    private static final String INCOME_COLUMN_ID = "id";
-    private static final String INCOME_COLUMN_DESCRIPTION = "description";
-    private static final String INCOME_COLUMN_CATEGORY = "category_id";
-    private static final String INCOME_COLUMN_MONTH = "month";
-    private static final String INCOME_COLUMN_YEAR = "year";
-    private static final String INCOME_COLUMN_DATE = "date";
-    private static final String INCOME_COLUMN_AMOUNT = "amount";
+//    private static final String INCOME_TABLE_NAME = "income";
+//    private static final String INCOME_COLUMN_ID = "id";
+//    private static final String INCOME_COLUMN_DESCRIPTION = "description";
+//    private static final String INCOME_COLUMN_CATEGORY = "category_id";
+//    private static final String INCOME_COLUMN_MONTH = "month";
+//    private static final String INCOME_COLUMN_YEAR = "year";
+//    private static final String INCOME_COLUMN_DATE = "date";
+//    private static final String INCOME_COLUMN_AMOUNT = "amount";
 
     private static final String BUDGET_TABLE_NAME = "budget";
     private static final String BUDGET_COLUMN_ID = "id";
@@ -81,10 +84,10 @@ public class DBHelper extends SQLiteOpenHelper {
                 "create table " + CATEGORY_TABLE_NAME + " " +
                         "(id integer primary key, " + CATEGORY_COLUMN_NAME + " text, " + CATEGORY_COLUMN_DESCRIPTION + " text, " + CATEGORY_COLUMN_TYPE + " int)"
         );
-        db.execSQL(
-                "create table income " +
-                        "(id integer primary key, description text, date long, month int, year int, amount double, category_id int)"
-        );
+//        db.execSQL(
+//                "create table income " +
+//                        "(id integer primary key, description text, date long, month int, year int, amount double, category_id int)"
+//        );
         db.execSQL(
                 "create table budget " +
                         "(id integer primary key, month int, year int, description text, amount double, category_id int)"
@@ -95,7 +98,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS expense");
         db.execSQL("DROP TABLE IF EXISTS category");
-        db.execSQL("DROP TABLE IF EXISTS income");
+//        db.execSQL("DROP TABLE IF EXISTS income");
         db.execSQL("DROP TABLE IF EXISTS budget");
         onCreate(db);
     }
@@ -138,33 +141,62 @@ public class DBHelper extends SQLiteOpenHelper {
         return (i>0)?true:false;
     }
 
-    public long addIncome (long date, int month, int year, double amount,String description, int categoryId) {
+//    public long addIncome (long date, int month, int year, double amount,String description, int categoryId) {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        ContentValues contentValues = new ContentValues();
+//        contentValues.put("date", date);
+//        contentValues.put("month", month);
+//        contentValues.put("year", year);
+//        contentValues.put("amount", amount);
+//        contentValues.put("description", description);
+//        contentValues.put("category_id", categoryId);
+//        long id = db.insert("income", null, contentValues);
+//        return id;
+//    }
+
+    public long addBudget (BudgetData data) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put("date", date);
-        contentValues.put("month", month);
-        contentValues.put("year", year);
-        contentValues.put("amount", amount);
-        contentValues.put("description", description);
-        contentValues.put("category_id", categoryId);
-        long id = db.insert("income", null, contentValues);
+        contentValues.put("month", data.getMonth());
+        contentValues.put("year", data.getYear());
+        contentValues.put("amount", data.getAmount());
+        contentValues.put("description", data.getDescription());
+        contentValues.put("category_id", data.getCategory());
+        long id = db.insert(BUDGET_TABLE_NAME, null, contentValues);
         return id;
     }
 
-    public long addBudget (int month, int year, double amount,String description, int categoryId) {
+    public long addMultipleBudget(ArrayList<BudgetData> budgetList){
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("month", month);
-        contentValues.put("year", year);
-        contentValues.put("amount", amount);
-        contentValues.put("description", description);
-        contentValues.put("category_id", categoryId);
-        long id = db.insert("expense", null, contentValues);
-        return id;
+        if(budgetList != null && budgetList.size() > 0){
+            String sql = "Insert into " + BUDGET_TABLE_NAME + " ( " + BUDGET_COLUMN_MONTH +" , " + BUDGET_COLUMN_YEAR + " , " + BUDGET_COLUMN_AMOUNT +" , " + BUDGET_COLUMN_DESCRIPTION +
+            " , "+ BUDGET_COLUMN_CATEGORY +") values(?,?,?,?,?)";
+            try {
+                db.beginTransaction();
+                SQLiteStatement insert = db.compileStatement(sql);
+                for (BudgetData data : budgetList) {
+                    insert.bindLong(1, data.getMonth());
+                    insert.bindLong(2, data.getYear());
+                    insert.bindDouble(3, data.getAmount());
+                    insert.bindString(4, data.getDescription());
+                    insert.bindLong(5, data.getCategory());
+                    insert.executeInsert();
+                }
+                db.setTransactionSuccessful();
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                return 0;
+            }
+            finally {
+                db.endTransaction();
+            }
+        }
+        return budgetList.size();
     }
 
 
-    public boolean updateExpense (int id,long date, int month, int year, double amount,String description, int categoryId) {
+    public boolean updateExpense (int id,long date, int month, int year, double amount, String description, int categoryId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("date", date);
@@ -176,19 +208,19 @@ public class DBHelper extends SQLiteOpenHelper {
         int i = db.update("expense", contentValues, "id = ? ", new String[] { Integer.toString(id) } );
         return (i>0)?true:false;
     }
-
-        public boolean updateIncome (int id, long date, int month, int year, double amount,String description, int categoryId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("date", date);
-        contentValues.put("month", month);
-        contentValues.put("year", year);
-        contentValues.put("amount", amount);
-        contentValues.put("description", description);
-        contentValues.put("category_id", categoryId);
-        int i = db.update("income", contentValues, "id = ? ", new String[] { Integer.toString(id) } );
-        return (i>0)?true:false;
-    }
+//
+//        public boolean updateIncome (int id, long date, int month, int year, double amount,String description, int categoryId) {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        ContentValues contentValues = new ContentValues();
+//        contentValues.put("date", date);
+//        contentValues.put("month", month);
+//        contentValues.put("year", year);
+//        contentValues.put("amount", amount);
+//        contentValues.put("description", description);
+//        contentValues.put("category_id", categoryId);
+//        int i = db.update("income", contentValues, "id = ? ", new String[] { Integer.toString(id) } );
+//        return (i>0)?true:false;
+//    }
 
     public boolean updateBudget (int id, int month, int year, double amount,String description, int categoryId) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -221,20 +253,6 @@ public class DBHelper extends SQLiteOpenHelper {
                 new String[] { Integer.toString(id) });
     }
 
-    public ArrayList<String> getAllCotacts() {
-        ArrayList<String> array_list = new ArrayList<String>();
-        //hp = new HashMap();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "select * from expense", null );
-        res.moveToFirst();
-
-        while(res.isAfterLast() == false){
-            array_list.add(res.getString(res.getColumnIndex(EXPENSE_COLUMN_AMOUNT)));
-            res.moveToNext();
-        }
-        return array_list;
-    }
-
     public Cursor getCategoryByName(String categoryName) {
         SQLiteDatabase db = this.getReadableDatabase();
         try {
@@ -252,7 +270,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public Cursor getAllCategory(int type) {
         SQLiteDatabase db = this.getReadableDatabase();
         try {
-            Cursor res = db.rawQuery("select * FROM " + CATEGORY_TABLE_NAME + " WHERE " + CATEGORY_COLUMN_TYPE + "= ? ORDER BY ? DESC", new String[]{type+"", CATEGORY_COLUMN_NAME});
+            Cursor res = db.rawQuery("select * FROM " + CATEGORY_TABLE_NAME + " WHERE " + CATEGORY_COLUMN_TYPE + "= ? ORDER BY ? DESC", new String[]{Integer.toString(type), CATEGORY_COLUMN_NAME});
             res.moveToFirst();
             return res;
         }
@@ -260,5 +278,13 @@ public class DBHelper extends SQLiteOpenHelper {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public boolean deleteCategory(CategoryData data) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int affectedColumns = db.delete(CATEGORY_TABLE_NAME,
+                CATEGORY_COLUMN_ID + " = ? ",
+                new String[] { Integer.toString(data.getId())});
+        return (affectedColumns>0);
     }
 }
